@@ -1,0 +1,19 @@
+{
+  "name": "nodejswithtsandrxjs",
+  "version": "1.0.0",
+  "description": "Experimenting with node.js and ts with rxjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thecameraguy/NodeJsWithTSandRXJS.git"
+  },
+  "author": "Jin Choi",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/thecameraguy/NodeJsWithTSandRXJS/issues"
+  },
+  "homepage": "https://github.com/thecameraguy/NodeJsWithTSandRXJS#readme"
+}
