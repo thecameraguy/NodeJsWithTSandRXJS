@@ -2,9 +2,11 @@
   "name": "nodejswithtsandrxjs",
   "version": "1.0.0",
   "description": "Experimenting with node.js and ts with rxjs",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "karma start",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,20 @@
   "bugs": {
     "url": "https://github.com/thecameraguy/NodeJsWithTSandRXJS/issues"
   },
-  "homepage": "https://github.com/thecameraguy/NodeJsWithTSandRXJS#readme"
+  "homepage": "https://github.com/thecameraguy/NodeJsWithTSandRXJS#readme",
+  "dependencies": {
+    "rxjs": "^6.5.4"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.5.9",
+    "jasmine": "^3.5.0",
+    "karma": "^4.4.1",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-typescript": "^5.0.1",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
 }
