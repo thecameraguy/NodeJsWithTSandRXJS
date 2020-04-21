@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/thecameraguy/NodeJsWithTSandRXJS#readme",
   "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.9.10",
     "rxjs": "^6.5.4"
   },
   "devDependencies": {
