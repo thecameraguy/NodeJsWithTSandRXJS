@@ -1,3 +1,4 @@
+import { take, flatMap } from 'rxjs/operators';
 import { IRoutesManager } from './routes/routesManager';
 import { ExpressRoutesManager } from './routes/expressRoutesManager';
 import { BuildingsExpressRoutes } from './routes/buildings/buildingsExpressRoutes';
@@ -6,9 +7,9 @@ import { MongooseCityDAO } from './models/dataAccessObjects/mongooseCityDAO';
 import { MongooseBuildingDAO } from './models/dataAccessObjects/mongooseBuildingDAO';
 import { IDatabaseController } from './database/databaseController';
 import { MongooseDBController } from './database/mongooseDBController';
+import { IWebServerController } from './webserver/webserverController';
+import { ExpressMWController } from './webserver/expressMWController';
 
-const Mongoose = require('mongoose');
-const mongoDB = 'theDBURL';
 const express = require('express');
 const app = express();
 
@@ -25,15 +26,18 @@ export class Main {
 
         // Connect DB
         const databaseController: IDatabaseController = MongooseDBController.instance();
+        const expressMWController: IWebServerController = new ExpressMWController(app);
         databaseController
             .connect(process.env.SANDBOX_DB_ADDRESS, {})
+            .pipe(
+                take(1),
+                flatMap((notUsed: any) => {
+                    return expressMWController.connect(Number(process.env.PORT || 3000), {});
+                })
+            )
             .subscribe(
-                (notUsed: any) => {
-                    // TODO Abstract out web server controller like how DB controller is abstracted out
-                    const port = process.env.PORT || 3000;
-                    app.listen(port, () => {
-                        console.log(`Example app listening on port ${port}!`);
-                    });
+                (port: any) => {
+                    console.log(`Example app listening on port ${port}!`);
                 },
                 (error: any) => {
                     console.error(error);
