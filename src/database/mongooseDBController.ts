@@ -24,6 +24,8 @@ export class MongooseDBController implements IDatabaseController {
             return Observable.throw('Connection is already active')
         }
 
+        this.m_isConnected = true;
+
         const returnObs = new Observable((subscriber) => {
             MongooseDBController.m_mongooseDB.on('open', () => {
                 subscriber.next(true);
