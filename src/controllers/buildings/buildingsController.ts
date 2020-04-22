@@ -28,7 +28,7 @@ export class BuildingsController {
         this.m_cityDAO.findSingleCity(city)
         .pipe(
             flatMap((city: City) => {
-                return this.m_buildingDAO.findBuilding(addressLike, city.name);
+                return this.m_buildingDAO.findBuildingsLike(addressLike, city.name);
             })
             // TODO Add another flatmap to add units to the buildings.
 

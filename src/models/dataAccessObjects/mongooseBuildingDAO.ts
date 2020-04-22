@@ -45,6 +45,22 @@ export class MongooseBuildingDAO extends AbstractBuildingDAO {
         return resultObservable;
     }
 
+    public findBuildingsLike(address: string, city: string): Observable<Building[]> {
+        // We are setting up a cold observable. The observable executes at the time of subscription.
+        // It also means that every subscriber executes this observable code separately.
+        // Use share if we want to share the observable results among multiple subscribers.
+        const resultObservable: Observable<Building[]> = new Observable((subscriber) => {
+            MongooseBuildingDAO.BUILDING_DB_MODEL.find({city: city, address: new RegExp(address, 'i')}, (error: any, buildings: any) => {
+                if (error) {
+                    subscriber.error(error);
+                } else {
+                    subscriber.next(this.dbModelToInternalModel(buildings));
+                }
+            })
+        });
+        return resultObservable;
+    }
+
     private dbModelToInternalModel(buildings: any[]): Building[] {
         const buildingModels: Building[] = buildings.map((building: any) => {
             return new Building(building._id, building.address, building.city, []);
