@@ -24,16 +24,22 @@ export class Main {
         routesManager.addRoutes(new BuildingsExpressRoutes('/buildings', mongooseDAOBundle));
         routesManager.buildRoutes(app);
 
-        // Connect DB
+
         const databaseController: IDatabaseController = MongooseDBController.instance();
-        const expressMWController: IWebServerController = new ExpressMWController(app);
+        const webserverController: IWebServerController = new ExpressMWController(app);
+
+        // Connect DB
         databaseController
             .connect(process.env.SANDBOX_DB_ADDRESS, {})
             .pipe(
+                // Once DB is connected, unsubscribe
                 take(1),
                 flatMap((notUsed: any) => {
-                    return expressMWController.connect(Number(process.env.PORT || 3000), {});
-                })
+                    // connect web server and start listening
+                    return webserverController.connect(Number(process.env.PORT || 3000), {});
+                }),
+                // Once web server is connected, unsubscribe
+                take(1)
             )
             .subscribe(
                 (port: any) => {
