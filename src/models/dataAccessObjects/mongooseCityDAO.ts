@@ -30,7 +30,7 @@ export class MongooseCityDAO extends AbstractCityDAO {
                     return;
                 }
 
-                subscriber.next(cities[0]);
+                subscriber.next(new City(cities[0]._id, cities[0].name));
             })
         });
         return resultObservable;
