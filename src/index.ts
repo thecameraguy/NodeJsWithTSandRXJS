@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { take, flatMap } from 'rxjs/operators';
 import { IRoutesManager } from './routes/routesManager';
 import { ExpressRoutesManager } from './routes/expressRoutesManager';
@@ -36,7 +37,7 @@ export class Main {
             .pipe(
                 // Once DB is connected, unsubscribe
                 take(1),
-                flatMap((notUsed: any) => {
+                flatMap((notUsed: any): Observable<any> => {
                     // connect web server and start listening
                     return webserverController.connect(Number(process.env.PORT || 3000), {});
                 }),
