@@ -24,4 +24,7 @@ export class Building {
     public get units(): Unit[] {
         return this.m_units.slice(0);
     }
+    public set units(units: Unit[]) {
+        this.m_units = units.slice(0);
+    }
 }

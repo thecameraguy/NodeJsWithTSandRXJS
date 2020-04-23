@@ -1,5 +1,5 @@
 import { pipe, Observable, of, forkJoin } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { flatMap, tap } from 'rxjs/operators';
 import { IControllerCommunicatorDelegate } from '../communicationDelegates/communicationDelegates';
 import { Building } from '../../models/building';
 import { City } from '../../models/city';
@@ -34,12 +34,17 @@ export class BuildingsController {
             flatMap((city: City): Observable<Building[]> => {
                 return this.m_buildingDAO.findBuildingsLike(addressLike, city.name);
             }),
+
             // With the list of buildings, get corresponding units
             flatMap((buildings: Building[]): Observable<Unit[][]> => {
-                // TODO Figure out functional programming way of remembering building and assigning returned units to the building
-                //      as a side-effect of this code
                 const unitsObservable = buildings.map((building: Building) => {
-                    return this.m_unitDAO.findByBuilding(building);
+                    // Hey, let's request units for this building. When those come back, let's tap into the
+                    // observable stream before returning it to the observable chain and do a little side-effect
+                    // of storing the units in the building model!
+                    return this.m_unitDAO.findByBuilding(building)
+                        .pipe(tap((units: Unit[]) => {
+                            building.units = units;
+                        }));
                 });
                 // Since each building spawns new async DB request that return their respective Observable,
                 // we want to fork and then join all these observables and continue when all are done.
