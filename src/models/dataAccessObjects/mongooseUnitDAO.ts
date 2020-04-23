@@ -26,7 +26,6 @@ export class MongooseUnitDAO extends AbstractUnitDAO {
                         subscriber.error('Null or undefined units returned');
                     }
 
-                    // TODO Convert to list of internal Unit model
                     subscriber.next(this.convertToInternalModel(units, building));
                     subscriber.complete();
                 });
