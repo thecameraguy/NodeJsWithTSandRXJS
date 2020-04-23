@@ -9,6 +9,7 @@ import { IDatabaseController } from './database/databaseController';
 import { MongooseDBController } from './database/mongooseDBController';
 import { IWebServerController } from './webserver/webserverController';
 import { ExpressMWController } from './webserver/expressMWController';
+import { MongooseUnitDAO } from './models/dataAccessObjects/mongooseUnitDAO';
 
 const express = require('express');
 const app = express();
@@ -17,7 +18,8 @@ export class Main {
     public static main() {
         const mongooseDAOBundle: DAOBundle = {
             cityDAO: new MongooseCityDAO(),
-            buildingDAO: new MongooseBuildingDAO()
+            buildingDAO: new MongooseBuildingDAO(),
+            unitDAO: new MongooseUnitDAO()
         }
 
         const routesManager: IRoutesManager = new ExpressRoutesManager();

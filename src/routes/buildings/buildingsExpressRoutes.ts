@@ -8,7 +8,7 @@ export class BuildingsExpressRoutes extends AbstractExpressRoutes {
     private m_buildingsController: BuildingsController;
     constructor(baseEndpoint: string, daoBundle: DAOBundle) {
         super(baseEndpoint, express.Router());
-        this.m_buildingsController = new BuildingsController(daoBundle.cityDAO, daoBundle.buildingDAO);
+        this.m_buildingsController = new BuildingsController(daoBundle.cityDAO, daoBundle.buildingDAO, daoBundle.unitDAO);
 
         // Obviously we will need to put in the proper routes here. This is just a placeholder
         this.router.get('/', (req: any, res: any) => { this.m_buildingsController.buildingList(new ExpressControllerCommunicationDelegate(req, res)); });

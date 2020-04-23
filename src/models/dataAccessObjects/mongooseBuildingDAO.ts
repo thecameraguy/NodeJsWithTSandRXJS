@@ -39,6 +39,7 @@ export class MongooseBuildingDAO extends AbstractBuildingDAO {
                     subscriber.error(error);
                 } else {
                     subscriber.next(this.dbModelToInternalModel(buildings));
+                    subscriber.complete();
                 }
             })
         });
@@ -55,6 +56,7 @@ export class MongooseBuildingDAO extends AbstractBuildingDAO {
                     subscriber.error(error);
                 } else {
                     subscriber.next(this.dbModelToInternalModel(buildings));
+                    subscriber.complete();
                 }
             })
         });

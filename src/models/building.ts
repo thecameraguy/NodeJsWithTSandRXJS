@@ -11,4 +11,17 @@ export class Building {
         this.m_city = city;
         this.m_units = units.slice(0);
     }
+
+    public get id(): string {
+        return this.m_id;
+    }
+    public get address(): string {
+        return this.m_address;
+    }
+    public get city(): string {
+        return this.m_city;
+    }
+    public get units(): Unit[] {
+        return this.m_units.slice(0);
+    }
 }
