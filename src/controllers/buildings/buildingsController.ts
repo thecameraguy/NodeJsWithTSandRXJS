@@ -31,11 +31,11 @@ export class BuildingsController {
         this.m_cityDAO.findSingleCity(city)
         .pipe(
             // Once that city comes back, get all the buildings that are in the city from DB
-            flatMap((city: City) => {
+            flatMap((city: City): Observable<Building[]> => {
                 return this.m_buildingDAO.findBuildingsLike(addressLike, city.name);
             }),
             // With the list of buildings, get corresponding units
-            flatMap((buildings: Building[]) => {
+            flatMap((buildings: Building[]): Observable<Unit[][]> => {
                 // TODO Figure out functional programming way of remembering building and assigning returned units to the building
                 //      as a side-effect of this code
                 const unitsObservable = buildings.map((building: Building) => {
