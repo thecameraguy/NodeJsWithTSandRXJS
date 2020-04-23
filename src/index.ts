@@ -14,6 +14,7 @@ import { MongooseUnitDAO } from './models/dataAccessObjects/mongooseUnitDAO';
 
 const express = require('express');
 const app = express();
+const DEFAULT_PORT: number = 3000;
 
 export class Main {
     public static main() {
@@ -39,7 +40,7 @@ export class Main {
                 take(1),
                 flatMap((notUsed: any): Observable<any> => {
                     // connect web server and start listening
-                    return webserverController.connect(Number(process.env.PORT || 3000), {});
+                    return webserverController.connect(Number(process.env.PORT || DEFAULT_PORT), {});
                 }),
                 // Once web server is connected, unsubscribe
                 take(1)
