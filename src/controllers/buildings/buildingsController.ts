@@ -1,5 +1,5 @@
-import { pipe, Observable, of, forkJoin } from 'rxjs';
-import { flatMap, tap } from 'rxjs/operators';
+import { Observable, forkJoin } from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
 import { IControllerCommunicatorDelegate } from '../communicationDelegates/communicationDelegates';
 import { Building } from '../../models/building';
 import { City } from '../../models/city';
@@ -36,27 +36,39 @@ export class BuildingsController {
             }),
 
             // With the list of buildings, get corresponding units
-            flatMap((buildings: Building[]): Observable<Unit[][]> => {
-                const unitsObservable = buildings.map((building: Building) => {
+            flatMap((buildings: Building[]): Observable<Building[]> => {
+                const unitsObservables: Observable<Building>[] = buildings.map((building: Building): Observable<Building> => {
                     // Hey, let's request units for this building. When those come back, let's tap into the
                     // observable stream before returning it to the observable chain and do a little side-effect
                     // of storing the units in the building model!
                     return this.m_unitDAO.findByBuilding(building)
-                        .pipe(tap((units: Unit[]) => {
-                            building.units = units;
-                        }));
+                        .pipe(
+                            // Let's transform Observable<Unit[]> into Observable<Building>
+                            // Individual building that's populated with units will be emitted as discrete
+                            // signal
+                            map((units: Unit[]): Building => {
+                                building.units = units;
+                                return building;
+                            })
+                        );
                 });
                 // Since each building spawns new async DB request that return their respective Observable,
                 // we want to fork and then join all these observables and continue when all are done.
-                return forkJoin (unitsObservable);
-            })
+                return forkJoin (unitsObservables);
+            }),
+
             // TODO Add another flatmap to add contracts to the units.
+            /*flatMap((buildings: Building[]) => {
+                const contractsObservables = buildings.map((building: Building) => {
+
+                });
+            })*/
 
             // Phew! Compared with async sequential queries and callback hell, this code is a breeze WowWee
         )
-        .subscribe((buildings: Unit[][]) => {
+        .subscribe((buildings: Building[]) => {
             // We got buildings here. Now return meaningful result.
-            communicationDelegate.sendResponse({bleep: 'bloop'});
+            communicationDelegate.sendResponse(buildings);
         });
     }
 }
