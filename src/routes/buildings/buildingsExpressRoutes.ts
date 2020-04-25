@@ -2,8 +2,6 @@ import { AbstractExpressRoutes } from '../expressRoutesManager';
 import { ExpressControllerCommunicationDelegate } from '../../controllers/communicationDelegates/communicationDelegates';
 import { BuildingsController } from '../../controllers/buildings/buildingsController';
 import { DAOBundle } from '../../models/dataAccessObjects/DAOBundle';
-
-// TODO Actually, this probably has to be the same express instance - no matter - let's take it in as an argument
 const express = require('express');
 
 export class BuildingsExpressRoutes extends AbstractExpressRoutes {
