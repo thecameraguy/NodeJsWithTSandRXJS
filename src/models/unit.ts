@@ -9,4 +9,14 @@ export class Unit {
         this.m_unit = unit;
         this.m_building = building;
     }
+
+    public get id(): string {
+        return this.m_id;
+    }
+    public get unit(): string {
+        return this.m_unit;
+    }
+    public get building(): Building {
+        return this.m_building;
+    }
 }
