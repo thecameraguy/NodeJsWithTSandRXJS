@@ -1,12 +1,15 @@
 import { Observable, forkJoin } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
+import { AppConstants } from '../../constants/constants';
 import { IControllerCommunicatorDelegate } from '../communicationDelegates/communicationDelegates';
 import { Building } from '../../models/building';
 import { City } from '../../models/city';
 import { Unit } from '../../models/unit';
+import { Contract } from '../../models/contract';
 import { ICityDAO } from '../../models/dataAccessObjects/cityDAO';
 import { IBuildingDAO } from '../../models/dataAccessObjects/buildingDAO';
 import { IUnitDAO } from '../../models/dataAccessObjects/unitDAO';
+import { IContractDAO } from '../../models/dataAccessObjects/contractDAO';
 
 // TODO Singleton. We could make an InjectorService that takes care of dependency injection..?
 
@@ -17,10 +20,12 @@ export class BuildingsController {
     private m_cityDAO: ICityDAO;
     private m_buildingDAO: IBuildingDAO;
     private m_unitDAO: IUnitDAO;
-    constructor (cityDAO: ICityDAO, buildingDAO: IBuildingDAO, unitDAO: IUnitDAO) {
+    private m_contractDAO: IContractDAO;
+    constructor (cityDAO: ICityDAO, buildingDAO: IBuildingDAO, unitDAO: IUnitDAO, contractDAO: IContractDAO) {
         this.m_cityDAO = cityDAO;
         this.m_buildingDAO = buildingDAO;
         this.m_unitDAO = unitDAO;
+        this.m_contractDAO = contractDAO;
     }
 
     public buildingList (communicationDelegate: IControllerCommunicatorDelegate) {
@@ -57,12 +62,49 @@ export class BuildingsController {
                 return forkJoin (unitsObservables);
             }),
 
-            // TODO Add another flatmap to add contracts to the units.
-            /*flatMap((buildings: Building[]) => {
-                const contractsObservables = buildings.map((building: Building) => {
+            // This flatMap fetched contacts that belong to each unit that are part of every building in
+            // the request list.
+            // This performs two fork-join of contract fetch observables. It has 2 levels. 1) Buildings, 2) Units
+            // Each building is looped through, and each unit within a building is transformed into individual
+            // contract fetch request observable. All the requests that belong to each building is fork-joined and
+            // combined observable (now containing every contract requests in a particular building) is collected
+            // for every building in this request. These building-level observables are then fork-joined to
+            // execute contract fetch requests for every building in the list.
+            flatMap((buildings: Building[]): Observable<Building[]> => {
+                const contractObservablesGroupedByBuildings: Observable<Building>[] =
+                    // Go through each building and its units and populate contract for each of the units
+                    // and once every unit is populated, return the original building that's now completed populating
+                    buildings.map((building: Building): Observable<Building> => {
 
-                });
-            })*/
+                        const contractObservablesGroupedByUnits: Observable<Unit>[] =
+                            // Go through every unit in this building and fetch latest contract for each unit
+                            building.units.map((unit: Unit): Observable<Unit> => {
+
+                                // Find latest contract for this unit
+                                return this.m_contractDAO.findLatestContract(building, unit, AppConstants.CONTRACTS_DAYS_BACK)
+                                    .pipe(
+                                        // Once the contract is fetched, store it in the original unit
+                                        // and return the unit that now stores the contract
+                                        map((contract: Contract) => {
+                                            unit.contract = contract;
+                                            return unit;
+                                        })
+                                    );
+                            });
+
+                        // Now execute all contract fetch requests for every unit that belong to this building
+                        // and once all of them are done, return the original building.
+                        return forkJoin(contractObservablesGroupedByUnits).pipe(
+                            map ((units: Unit[]) => {
+                                return building;
+                            })
+                        );
+                    });
+                
+                // Now execute all contract fetch requests for every building - this will cascade into each unit
+                // and execute contract fetch requests for each unit.
+                return forkJoin(contractObservablesGroupedByBuildings);
+            })
 
             // Phew! Compared with async sequential queries and callback hell, this code is a breeze WowWee
         )

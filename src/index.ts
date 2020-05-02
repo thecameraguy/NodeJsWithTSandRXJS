@@ -11,6 +11,7 @@ import { MongooseDBController } from './database/mongooseDBController';
 import { IWebServerController } from './webserver/webserverController';
 import { ExpressMWController } from './webserver/expressMWController';
 import { MongooseUnitDAO } from './models/dataAccessObjects/mongooseUnitDAO';
+import { MongooseContractDAO } from './models/dataAccessObjects/mongooseContractDAO';
 
 const express = require('express');
 const app = express();
@@ -21,7 +22,8 @@ export class Main {
         const mongooseDAOBundle: DAOBundle = {
             cityDAO: new MongooseCityDAO(),
             buildingDAO: new MongooseBuildingDAO(),
-            unitDAO: new MongooseUnitDAO()
+            unitDAO: new MongooseUnitDAO(),
+            contractDAO: new MongooseContractDAO
         }
 
         const routesManager: IRoutesManager = new ExpressRoutesManager();
