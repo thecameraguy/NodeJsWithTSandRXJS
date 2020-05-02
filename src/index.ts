@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import { take, flatMap } from 'rxjs/operators';
+import { AppConstants } from './constants/constants';
 import { IRoutesManager } from './routes/routesManager';
 import { ExpressRoutesManager } from './routes/expressRoutesManager';
 import { BuildingsExpressRoutes } from './routes/buildings/buildingsExpressRoutes';
@@ -15,7 +16,6 @@ import { MongooseContractDAO } from './models/dataAccessObjects/mongooseContract
 
 const express = require('express');
 const app = express();
-const DEFAULT_PORT: number = 3000;
 
 export class Main {
     public static main() {
@@ -42,7 +42,7 @@ export class Main {
                 take(1),
                 flatMap((notUsed: any): Observable<any> => {
                     // connect web server and start listening
-                    return webserverController.connect(Number(process.env.PORT || DEFAULT_PORT), {});
+                    return webserverController.connect(Number(process.env.PORT || AppConstants.DEFAULT_PORT), {});
                 }),
                 // Once web server is connected, unsubscribe
                 take(1)
