@@ -4,7 +4,7 @@ Experimenting with writing Node.js with express.js middleware, mongoose/MongoDB 
 to run:
 ```
 npm run build
-node dist/index.js
+node dist/src/index.js
 ```
 
 Make sure to have environment variables
